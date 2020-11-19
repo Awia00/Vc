@@ -1,3 +1,20 @@
+# Vc: portable, zero-overhead C++ types for explicitly data-parallel programming
+## Building the Conan package:
+
+```
+mkdir build
+cd build
+conan install ..
+conan create .. <user>/<channel>
+conan upload Vc/<version>@<user>/<channel> -r <remote_name>
+```
+
+---
+
+**ORIGINAL README BELOW**
+
+---
+
 **You may be interested in switching to [std-simd](https://github.com/VcDevel/std-simd).** Features present in Vc 1.4 and not present in *std-simd* will eventually turn into Vc 2.0, which then depends on *std-simd*.
 
 # Vc: portable, zero-overhead C++ types for explicitly data-parallel programming

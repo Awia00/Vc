@@ -7,3 +7,11 @@ vc-benchmarks
 .makeApidox.stamp
 .makeApidox.stamp.new
 build-*
+
+# conan
+conan.lock
+conanbuildinfo.cmake
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json
+test_package/build
