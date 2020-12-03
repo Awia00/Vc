@@ -18,6 +18,7 @@
 #include <cstddef>      // for std::byte
 #include <iterator>     // for iterators
 #include <type_traits>  // for remove_cv, etc
+
 #include "subscript.h"  // for AdaptSubscriptOperator
 
 namespace Vc_VERSIONED_NAMESPACE
@@ -116,7 +117,8 @@ struct _is_span_compatible_container<
             std::nullptr_t>::type>> : public std::true_type {
 };
 
-#if defined Vc_MSVC || (defined Vc_GCC && Vc_GCC < 0x50100) || defined Vc_ICC || !defined __cpp_constexpr || __cpp_constexpr < 201304
+#if defined Vc_MSVC || (defined Vc_GCC && Vc_GCC < 0x50100) || defined Vc_ICC ||         \
+    !defined __cpp_constexpr || __cpp_constexpr < 201304
 #define Vc_CONSTEXPR
 #else
 #define Vc_CONSTEXPR constexpr
@@ -155,7 +157,8 @@ public:
     Vc_CONSTEXPR span(pointer _ptr, index_type _count) : data_{_ptr}
     {
         (void)_count;
-        Vc_ASSERT(((void)"size mismatch in span's constructor (ptr, len)", Extent == _count));
+        Vc_ASSERT(
+            ((void)"size mismatch in span's constructor (ptr, len)", Extent == _count));
     }
     Vc_CONSTEXPR span(pointer _f, pointer _l) : data_{_f}
     {
@@ -166,7 +169,9 @@ public:
 
     Vc_CONSTEXPR span(element_type (&_arr)[Extent]) noexcept : data_{_arr} {}
     Vc_CONSTEXPR span(array<value_type, Extent>& _arr) noexcept : data_{_arr.data()} {}
-    Vc_CONSTEXPR span(const array<value_type, Extent>& _arr) noexcept : data_{_arr.data()} {}
+    Vc_CONSTEXPR span(const array<value_type, Extent>& _arr) noexcept : data_{_arr.data()}
+    {
+    }
 
     template <class Container>
     inline Vc_CONSTEXPR span(
@@ -230,7 +235,8 @@ public:
         return {data() + size() - Count, Count};
     }
 
-    Vc_CONSTEXPR span<element_type, dynamic_extent> first(index_type _count) const noexcept
+    Vc_CONSTEXPR span<element_type, dynamic_extent> first(
+        index_type _count) const noexcept
     {
         Vc_ASSERT(("Count out of range in span::first(count)",
                    _count >= 0 && _count <= size()));
@@ -302,8 +308,14 @@ public:
     {
         return const_iterator(data() + size());
     }
-    Vc_CONSTEXPR reverse_iterator rbegin() const noexcept { return reverse_iterator(end()); }
-    Vc_CONSTEXPR reverse_iterator rend() const noexcept { return reverse_iterator(begin()); }
+    Vc_CONSTEXPR reverse_iterator rbegin() const noexcept
+    {
+        return reverse_iterator(end());
+    }
+    Vc_CONSTEXPR reverse_iterator rend() const noexcept
+    {
+        return reverse_iterator(begin());
+    }
     Vc_CONSTEXPR const_reverse_iterator crbegin() const noexcept
     {
         return const_reverse_iterator(cend());
@@ -319,18 +331,6 @@ public:
         data_ = _other.data_;
         _other.data_ = _p;
     }
-
-#ifdef __cpp_lib_byte
-    span<const std::byte, Extent * sizeof(element_type)> _as_bytes() const noexcept
-    {
-        return {reinterpret_cast<const std::byte*>(data()), size_bytes()};
-    }
-
-    span<std::byte, Extent * sizeof(element_type)> _as_writeable_bytes() const noexcept
-    {
-        return {reinterpret_cast<std::byte*>(data()), size_bytes()};
-    }
-#endif  // __cpp_lib_byte
 
 private:
     pointer data_;
@@ -428,7 +428,8 @@ public:
         return {data() + size() - Count, Count};
     }
 
-    Vc_CONSTEXPR span<element_type, dynamic_extent> first(index_type _count) const noexcept
+    Vc_CONSTEXPR span<element_type, dynamic_extent> first(
+        index_type _count) const noexcept
     {
         Vc_ASSERT(("Count out of range in span::first(count)",
                    _count >= 0 && _count <= size()));
@@ -495,8 +496,14 @@ public:
     {
         return const_iterator(data() + size());
     }
-    Vc_CONSTEXPR reverse_iterator rbegin() const noexcept { return reverse_iterator(end()); }
-    Vc_CONSTEXPR reverse_iterator rend() const noexcept { return reverse_iterator(begin()); }
+    Vc_CONSTEXPR reverse_iterator rbegin() const noexcept
+    {
+        return reverse_iterator(end());
+    }
+    Vc_CONSTEXPR reverse_iterator rend() const noexcept
+    {
+        return reverse_iterator(begin());
+    }
     Vc_CONSTEXPR const_reverse_iterator crbegin() const noexcept
     {
         return const_reverse_iterator(cend());
@@ -516,18 +523,6 @@ public:
         size_ = _other.size_;
         _other.size_ = _sz;
     }
-
-#ifdef __cpp_lib_byte
-    span<const std::byte, dynamic_extent> _as_bytes() const noexcept
-    {
-        return {reinterpret_cast<const std::byte*>(data()), size_bytes()};
-    }
-
-    span<std::byte, dynamic_extent> _as_writeable_bytes() const noexcept
-    {
-        return {reinterpret_cast<std::byte*>(data()), size_bytes()};
-    }
-#endif  // __cpp_lib_byte
 
 private:
     pointer data_;
@@ -595,16 +590,16 @@ Vc_CONSTEXPR void swap(span<T, Extent>& lhs, span<T, Extent>& rhs) noexcept
 
 //  Deduction guides
 #ifdef __cpp_deduction_guides
-template <class T, size_t Sz> span(T (&)[Sz])->span<T, Sz>;
+template <class T, size_t Sz> span(T (&)[Sz]) -> span<T, Sz>;
 
-template <class T, size_t Sz> span(array<T, Sz>&)->span<T, Sz>;
+template <class T, size_t Sz> span(array<T, Sz>&) -> span<T, Sz>;
 
-template <class T, size_t Sz> span(const array<T, Sz>&)->span<const T, Sz>;
+template <class T, size_t Sz> span(const array<T, Sz>&) -> span<const T, Sz>;
 
-template <class Container> span(Container&)->span<typename Container::value_type>;
+template <class Container> span(Container&) -> span<typename Container::value_type>;
 
 template <class Container>
-span(const Container&)->span<const typename Container::value_type>;
+span(const Container&) -> span<const typename Container::value_type>;
 #endif  // __cpp_deduction_guides
 
 }  // namespace Common
@@ -613,9 +608,11 @@ span(const Container&)->span<const typename Container::value_type>;
  * \ingroup Containers
  * \headerfile span.h <Vc/span>
  *
- * An adapted `std::span` with additional subscript operators supporting gather and scatter operations.
+ * An adapted `std::span` with additional subscript operators supporting gather and
+ * scatter operations.
  *
- * The [std::span](https://en.cppreference.com/w/cpp/container/span) documentation applies.
+ * The [std::span](https://en.cppreference.com/w/cpp/container/span) documentation
+ * applies.
  *
  * Example:
  * \code
