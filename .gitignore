@@ -9,3 +9,11 @@ vc-benchmarks
 build-*
 .vs
 out
+
+# conan
+conan.lock
+conanbuildinfo.cmake
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json
+test_package/build
