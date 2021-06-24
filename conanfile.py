@@ -3,7 +3,7 @@ from conans import ConanFile, CMake
 
 class VcConan(ConanFile):
     name = "Vc"
-    version = "5824e56"
+    version = "facd7e5a"
     license = "3-clause BSD license"
     author = "Matthias Kretz M.Kretz@gsi.de"
     url = "https://github.com/VcDevel/Vc"
