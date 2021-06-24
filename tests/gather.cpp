@@ -112,14 +112,15 @@ template <class V, class T> void gatherArrayImpl()
 
     const int count = 39999;
     T array[count];
+    using value_type = typename V::value_type;
+    using limits = typename std::conditional<
+        (std::is_floating_point<T>::value && std::is_integral<value_type>::value),
+        std::numeric_limits<value_type>, std::numeric_limits<T>>::type;
+    const T max = static_cast<T>(limits::max());
     for (int i = 0; i < count; ++i) {
-        using value_type = typename V::value_type;
-        using limits = typename std::conditional<
-            (std::is_floating_point<T>::value && std::is_integral<value_type>::value),
-            std::numeric_limits<value_type>, std::numeric_limits<T>>::type;
         T tmp = i + 1;
-        while (tmp > limits::max()) {
-            tmp -= limits::max();
+        while (tmp > max) {
+            tmp -= max;
         }
         array[i] = tmp;
     }
@@ -166,13 +167,14 @@ TEST_TYPES(Vec, gatherArray, ALL_TYPES)
     gatherArrayImpl<Vec, double>();
 }
 
-template<typename T, std::size_t Align> struct Struct
+template <typename T, size_t Align = std::is_arithmetic<T>::value ? sizeof(T) : alignof(T)>
+struct alignas(Align > alignof(short) ? Align : alignof(short)) Struct
 {
-    alignas(Align) T a;
+    T a;
     char x;
-    alignas(Align) T b;
+    T b;
     short y;
-    alignas(Align) T c;
+    T c;
     char z;
 };
 
@@ -180,7 +182,7 @@ TEST_TYPES(Vec, gatherStruct, ALL_TYPES)
 {
     typedef typename Vec::IndexType It;
     typedef typename Vec::EntryType T;
-    typedef Struct<T, alignof(T)> S;
+    typedef Struct<T> S;
     constexpr int count = 3999;
     Vc::array<S, count> array;
     Vc::span<S, count> s(array);

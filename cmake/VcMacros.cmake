@@ -32,7 +32,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8.3...3.13)
 
 get_filename_component(_currentDir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include ("${_currentDir}/UserWarning.cmake")
@@ -338,6 +338,7 @@ int main() { return 0; }
          add_definitions(-D_CRT_SECURE_NO_WARNINGS)
       endif()
       vc_add_compiler_flag(Vc_COMPILE_FLAGS "/Gv") # default to __vectorcall
+      vc_add_compiler_flag(Vc_COMPILE_FLAGS "/bigobj") # required for building tests with AVX
 
       if(MSVC_VERSION LESS 1900)
          UserWarning("MSVC before 2015 does not support enough of C++11")

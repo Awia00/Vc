@@ -7,6 +7,8 @@ vc-benchmarks
 .makeApidox.stamp
 .makeApidox.stamp.new
 build-*
+.vs
+out
 
 # conan
 conan.lock

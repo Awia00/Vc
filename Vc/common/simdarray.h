@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "../IO"
 
 #include <array>
+#include <limits>
 
 #include "writemaskedvector.h"
 #include "simdarrayhelper.h"
@@ -292,7 +293,7 @@ public:
     template <class U, class Flags = DefaultLoadTag,
               class = enable_if<std::is_arithmetic<U>::value &&
                                 Traits::is_load_store_flag<Flags>::value>>
-    explicit Vc_INTRINSIC SimdArray(const U *mem, Flags f = Flags()) : data(mem, f)
+    explicit Vc_INTRINSIC SimdArray(const U *mem, Flags f = {}) : data(mem, f)
     {
     }
 
@@ -770,7 +771,7 @@ public:
     template <typename U, typename Flags = DefaultLoadTag,
               typename = enable_if<std::is_arithmetic<U>::value &&
                                    Traits::is_load_store_flag<Flags>::value>>
-    explicit Vc_INTRINSIC SimdArray(const U *mem, Flags f = Flags())
+    explicit Vc_INTRINSIC SimdArray(const U *mem, Flags f = {})
         : data0(mem, f), data1(mem + storage_type0::size(), f)
     {
     }
@@ -786,7 +787,7 @@ public:
     template <typename U, std::size_t Extent, typename Flags = DefaultLoadTag,
               typename = enable_if<std::is_arithmetic<U>::value &&
                                    Traits::is_load_store_flag<Flags>::value>>
-    explicit Vc_INTRINSIC SimdArray(CArray<U, Extent> &mem, Flags f = Flags())
+    explicit Vc_INTRINSIC SimdArray(CArray<U, Extent> &mem, Flags f = {})
         : data0(&mem[0], f), data1(&mem[storage_type0::size()], f)
     {
     }
@@ -796,7 +797,7 @@ public:
     template <typename U, std::size_t Extent, typename Flags = DefaultLoadTag,
               typename = enable_if<std::is_arithmetic<U>::value &&
                                    Traits::is_load_store_flag<Flags>::value>>
-    explicit Vc_INTRINSIC SimdArray(const CArray<U, Extent> &mem, Flags f = Flags())
+    explicit Vc_INTRINSIC SimdArray(const CArray<U, Extent> &mem, Flags f = {})
         : data0(&mem[0], f), data1(&mem[storage_type0::size()], f)
     {
     }
